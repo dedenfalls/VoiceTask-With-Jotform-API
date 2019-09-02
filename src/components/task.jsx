@@ -1,12 +1,14 @@
 /* eslint-disable no-plusplus */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './task.css';
 
 class Task extends Component {
   constructor(props) {
     super(props);
     this.state = {
     };
+    this.myRef = React.createRef();
   }
 
   blobify = () => {
@@ -23,6 +25,11 @@ class Task extends Component {
     return soundURL;
   }
 
+  stop = () => {
+    this.myRef.current.currentTime = 0;
+    this.myRef.current.pause();
+  }
+
   render() {
     const { props } = this;
     return (
@@ -31,7 +38,8 @@ class Task extends Component {
         {props.value}
         ID:
         {props.id !== '-1' && props.id}
-        <audio controls src={this.blobify()} />
+        <button type="button" className="button" onClick={this.stop}>■</button>
+        <audio controls className="audio" ref={this.myRef} src={this.blobify()} />
       </div>
     );
   }
@@ -42,9 +50,10 @@ Task.propTypes = {
   id: PropTypes.string,
   voice: PropTypes.string,
 };
+let badID = -1;
 Task.defaultProps = {
   value: '',
-  id: '-1 ',
+  id: badID--,
   voice: '',
 };
 

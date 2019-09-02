@@ -1,0 +1,15 @@
+.button {
+    background-color: white;
+    margin-bottom: 20px;
+    margin-left: 20px;
+}
+.audio {
+    margin-top: 20px;
+    margin-bottom: -20px;
+    background-color: white;  
+    border-block-color: white;
+    border-color: white;  
+}
+.nobull {
+    list-style-type: none;
+}

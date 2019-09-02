@@ -4,8 +4,8 @@
 /* eslint-disable no-plusplus */
 import React, { Component } from 'react';
 
-const credentials = require('../credentials');
 const axios = require('axios');
+const credentials = require('../credentials');
 
 class Recorder extends Component {
   constructor(props) {
@@ -19,6 +19,8 @@ class Recorder extends Component {
     this.taskArray = [];
     this.chunks = [];
     this.blob = null;
+    this.haveRecord = false;
+    this.started = false;
   }
 
   componentDidMount = () => {
@@ -53,6 +55,8 @@ class Recorder extends Component {
   fillSaveFile = (media) => {
     this.mediaRecorder = new MediaRecorder(media);
     this.mediaRecorder.ondataavailable = (ev) => {
+      console.log('incoming data');
+
       // eslint-disable-next-line react/destructuring-assignment
       // this.setState({ chunks: this.state.chunks.concat(ev.data) });
       this.chunks = [...this.chunks, ev.data];
@@ -60,9 +64,8 @@ class Recorder extends Component {
     this.mediaRecorder.onstop = () => {
       const blob = new Blob(this.chunks, { type: 'audio/mp3;' });
 
-      const videoURL = window.URL.createObjectURL(blob);
-      this.chunks = [];
-      this.setState({ recordURL: videoURL });
+      const audioURL = window.URL.createObjectURL(blob);
+      this.setState({ recordURL: audioURL });
       this.blob = blob;
       //  console.log(data);
     };
@@ -72,35 +75,33 @@ class Recorder extends Component {
     this.setState({ taskName: event.target.value });
   }
 
+  startRecording = () => {
+    this.clearRecording();
+    const { mediaRecorder } = this;
+    this.started = true;
+
+    this.haveRecord = false;
+    this.setState({ isRecording: true });
+    mediaRecorder.start();
+  }
+
   toggleRecord = () => {
-    const { isRecording } = this.state;
     const { mediaRecorder } = this;
 
-    if (mediaRecorder === null) {
-      alert('please provide access to your microphone');
-      return;
-    }
-
-    if (!isRecording) {
-      if (mediaRecorder.state === 'recording') {
-        console.log('already recording');
-        return;
-      }
-      mediaRecorder.start();
+    if (mediaRecorder.state === 'paused') {
+      this.haveRecord = false;
       this.setState({ isRecording: true });
+      mediaRecorder.resume();
       console.log(mediaRecorder.state);
     } else {
-      if (mediaRecorder.state === 'inactive') {
-        console.log('already not recording');
-        return;
-      }
-      mediaRecorder.stop();
+      mediaRecorder.pause();
       console.log(mediaRecorder.state);
       this.setState({ isRecording: false });
+      this.haveRecord = true;
     }
   }
 
-  convertBlobToBase64 = () => {
+  convertBlobToBase64ThenSave = () => {
     const { taskName } = this.state;
     if (this.blob === null || taskName === '') {
       alert('please enter a name and voice');
@@ -114,7 +115,7 @@ class Recorder extends Component {
   }
 
   addVoiceTask = (voice) => {
-    const { taskName } = this.state;
+    let { taskName } = this.state;
     axios({
       method: 'post',
       url: 'https://api.jotform.com/form/92323722053954/submissions',
@@ -128,7 +129,28 @@ class Recorder extends Component {
       },
     }).then((response) => console.log(response));
     this.blob = null;
-    this.setState({ taskName: '' });
+    this.chunks = [];
+    taskName = '';
+    this.setState({ taskName });
+  }
+
+  endRecording = () => {
+    console.log(this.mediaRecorder);
+
+    this.mediaRecorder.stop();
+    this.haveRecord = true;
+    this.started = false;
+  }
+
+  clearRecording = () => {
+    if (this.mediaRecorder.state === 'paused') {
+      this.mediaRecorder.stop();
+    }
+    this.chunks = [];
+    this.setState({ recordURL: '' });
+    this.blob = null;
+    this.haveRecord = false;
+    this.started = false;
   }
 
   render() {
@@ -139,13 +161,17 @@ class Recorder extends Component {
       <>
 
         <h2>Please Enter a Brief Task Name For Voice Record</h2>
-        <input onChange={this.updateTaskName} />
+        <input onChange={this.updateTaskName} value={taskName} />
         <audio controls src={recordURL} />
-        <button type="button" onClick={this.toggleRecord}>
-          {!isRecording ? 'Start Record' : 'Stop Record'}
-        </button>
-        <button type="button" onClick={this.convertBlobToBase64}> Add Task </button>
-        <h3>{taskName}</h3>
+        {!this.started && (<button type="button" onClick={this.startRecording}> Start Recording </button>)}
+        {this.started && (
+          <button type="button" onClick={this.toggleRecord}>
+            {!isRecording ? 'Continue Recording' : 'Stop Recording'}
+          </button>
+        )}
+        {this.haveRecord && this.started && (<button type="button" onClick={this.endRecording}> End Recording </button>)}
+        {this.haveRecord && this.started && (<button type="button" onClick={this.clearRecording}> Clear Recording </button>)}
+        <button type="button" onClick={this.convertBlobToBase64ThenSave}> Add Task </button>
       </>
     );
   }

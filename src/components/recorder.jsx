@@ -4,6 +4,7 @@
 /* eslint-disable no-plusplus */
 import React, { Component } from 'react';
 
+
 const axios = require('axios');
 const credentials = require('../credentials');
 
@@ -15,6 +16,7 @@ class Recorder extends Component {
       taskName: '',
       recordURL: '',
     };
+    this.startRecording = this.startRecording.bind(this);
     this.mediaRecorder = null;
     this.taskArray = [];
     this.chunks = [];
@@ -33,9 +35,11 @@ class Recorder extends Component {
         console.log('hata');
       },
     );
-    const constraints = {
-      audio: true, video: false,
-    };
+    navigator.permissions.query({ name: 'microphone' }).then((permstatus) => {
+      if (permstatus.state !== 'granted') {
+        alert('Please enable microphone permission');
+      }
+    });
 
     if (navigator.mediaDevices === undefined) {
       console.log('unable to connect to audio recording device');
@@ -48,12 +52,9 @@ class Recorder extends Component {
           console.log(err.name, err.message);
         });
     }
-    navigator.mediaDevices.getUserMedia(constraints)
-      .then((mediaobj) => this.fillSaveFile(mediaobj));
   }
 
-  fillSaveFile = (media) => {
-    this.mediaRecorder = new MediaRecorder(media);
+  fillSaveFile = () => {
     this.mediaRecorder.ondataavailable = (ev) => {
       console.log('incoming data');
 
@@ -73,16 +74,6 @@ class Recorder extends Component {
 
   updateTaskName = (event) => {
     this.setState({ taskName: event.target.value });
-  }
-
-  startRecording = () => {
-    this.clearRecording();
-    const { mediaRecorder } = this;
-    this.started = true;
-
-    this.haveRecord = false;
-    this.setState({ isRecording: true });
-    mediaRecorder.start();
   }
 
   toggleRecord = () => {
@@ -135,7 +126,9 @@ class Recorder extends Component {
   }
 
   endRecording = () => {
-    console.log(this.mediaRecorder);
+    window.streamReference.getAudioTracks().forEach((track) => {
+      track.stop();
+    });
 
     this.mediaRecorder.stop();
     this.haveRecord = true;
@@ -143,7 +136,7 @@ class Recorder extends Component {
   }
 
   clearRecording = () => {
-    if (this.mediaRecorder.state === 'paused') {
+    if (this.mediaRecorder && this.mediaRecorder.state === 'paused') {
       this.mediaRecorder.stop();
     }
     this.chunks = [];
@@ -151,6 +144,26 @@ class Recorder extends Component {
     this.blob = null;
     this.haveRecord = false;
     this.started = false;
+  }
+
+  async startRecording() {
+    const response = await navigator.mediaDevices.getUserMedia({ audio: true });
+    window.streamReference = response;
+
+    console.log(this.mediaRecorder);
+
+    this.mediaRecorder = new MediaRecorder(response);
+    console.log('hey');
+
+    this.fillSaveFile();
+    this.clearRecording();
+    const { mediaRecorder } = this;
+    this.started = true;
+
+    this.haveRecord = false;
+    this.setState({ isRecording: true });
+    console.log('yey');
+    mediaRecorder.start();
   }
 
   render() {

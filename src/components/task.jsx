@@ -37,7 +37,7 @@ class Task extends Component {
 
         {props.value}
         ID:
-        {props.id !== '-1' && props.id}
+        {!(props.id).includes('GMT+') && props.id}
         <button type="button" className="button" onClick={this.stop}>■</button>
         <audio controls className="audio" ref={this.myRef} src={this.blobify()} />
       </div>
@@ -50,10 +50,10 @@ Task.propTypes = {
   id: PropTypes.string,
   voice: PropTypes.string,
 };
-let badID = -1;
+
 Task.defaultProps = {
   value: '',
-  id: badID--,
+  id: (new Date()).toString(),
   voice: '',
 };
 

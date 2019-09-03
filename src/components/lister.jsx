@@ -17,6 +17,7 @@ class Lister extends Component {
   }
 
   componentDidMount() {
+    const counter = setInterval(this.retrieveVoiceTasks, 3000);
     this.retrieveVoiceTasks();
   }
 
@@ -27,7 +28,8 @@ class Lister extends Component {
       params: {
         apiKey: credentials.apiKey,
       },
-    }).then((response) => this.setRetrievedTasks(response));
+    }).then((response) => this.setRetrievedTasks(response))
+      .catch((err) => console.log(err));
     // this.setState({isRetrieveRequested: true});
   }
 
@@ -35,16 +37,22 @@ class Lister extends Component {
     const { taskArray } = this.state;
     if (!tasks.data) {
       alert('a problem occured while retrieving tasks');
+      return;
     }
+    const helper = [];
     tasks.data.content.forEach((task) => {
       const name = Object.values(task.answers).filter((o) => o.name === 'typeA7')[0].answer;
       const voice = Object.values(task.answers).filter((o) => o.name === 'typeA')[0].answer;
-      const helper = taskArray;
+
       helper.push({ id: task.id, name, voice });
-      this.setState({ taskArray: helper });
     });
     console.log(taskArray);
-    this.setState({ taskArray });
+    console.log((new Date()).toString());
+    if (JSON.stringify(helper) !== JSON.stringify(taskArray)) {
+      console.log('girdi');
+
+      this.setState({ taskArray: helper });
+    }
   }
 
   // console.log(window.URL.createObjectURL(mp3));

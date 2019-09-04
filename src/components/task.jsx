@@ -7,12 +7,14 @@ class Task extends Component {
   constructor(props) {
     super(props);
     this.state = {
+
     };
     this.myRef = React.createRef();
   }
 
   blobify = () => {
     const { voice } = this.props;
+
     const byteString = atob(voice.split(',')[1]);
     const ab = new ArrayBuffer(byteString.length);
     const ia = new Uint8Array(ab);
@@ -23,6 +25,7 @@ class Task extends Component {
     const blob = new Blob([ab], { type: 'audio/mp3' });
     const soundURL = window.URL.createObjectURL(blob);
     return soundURL;
+    // this.setState({ data: voice, URL: soundURL });
   }
 
   stop = () => {
@@ -34,12 +37,14 @@ class Task extends Component {
     const { props } = this;
     return (
       <div>
-
+        <hr className="hr" />
         {props.value}
-        ID:
-        {!(props.id).includes('GMT+') && props.id}
-        <button type="button" className="button" onClick={this.stop}>■</button>
-        <audio controls className="audio" ref={this.myRef} src={this.blobify()} />
+        <div className="merge">
+          <button type="button" className="button" onClick={this.stop}>■</button>
+          <audio controls ref={this.myRef} className="audio" src={this.blobify()} />
+        </div>
+        <br />
+        <br />
       </div>
     );
   }
@@ -47,13 +52,11 @@ class Task extends Component {
 
 Task.propTypes = {
   value: PropTypes.string,
-  id: PropTypes.string,
   voice: PropTypes.string,
 };
 
 Task.defaultProps = {
   value: '',
-  id: (new Date()).toString(),
   voice: '',
 };
 

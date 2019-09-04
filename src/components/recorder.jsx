@@ -3,7 +3,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-plusplus */
 import React, { Component } from 'react';
-
+import { isEmpty } from 'underscore';
 
 const axios = require('axios');
 const credentials = require('../credentials');
@@ -15,14 +15,21 @@ class Recorder extends Component {
       isRecording: false,
       taskName: '',
       recordURL: '',
+      duration: 0,
+      noTaskName: false,
     };
-    this.startRecording = this.startRecording.bind(this);
     this.mediaRecorder = null;
     this.taskArray = [];
     this.chunks = [];
     this.blob = null;
     this.haveRecord = false;
     this.started = false;
+    this.timer = null;
+    this.precisetime = 0;
+    this.everRecorded = false;
+    this.inpref = React.createRef();
+    this.showAudio = false;
+    this.preventer = false;
   }
 
   componentDidMount = () => {
@@ -35,12 +42,6 @@ class Recorder extends Component {
         console.log('hata');
       },
     );
-    navigator.permissions.query({ name: 'microphone' }).then((permstatus) => {
-      if (permstatus.state !== 'granted') {
-        alert('Please enable microphone permission');
-      }
-    });
-
     if (navigator.mediaDevices === undefined) {
       console.log('unable to connect to audio recording device');
     } else {
@@ -56,10 +57,6 @@ class Recorder extends Component {
 
   fillSaveFile = () => {
     this.mediaRecorder.ondataavailable = (ev) => {
-      console.log('incoming data');
-
-      // eslint-disable-next-line react/destructuring-assignment
-      // this.setState({ chunks: this.state.chunks.concat(ev.data) });
       this.chunks = [...this.chunks, ev.data];
     };
     this.mediaRecorder.onstop = () => {
@@ -68,12 +65,12 @@ class Recorder extends Component {
       const audioURL = window.URL.createObjectURL(blob);
       this.setState({ recordURL: audioURL });
       this.blob = blob;
-      //  console.log(data);
     };
   };
 
   updateTaskName = (event) => {
-    this.setState({ taskName: event.target.value });
+    this.inpref.current.placeholder = '';
+    this.setState({ taskName: event.target.value, noTaskName: false });
   }
 
   toggleRecord = () => {
@@ -83,9 +80,12 @@ class Recorder extends Component {
       this.haveRecord = false;
       this.setState({ isRecording: true });
       mediaRecorder.resume();
+      const inc = setInterval(this.calculateDuration, 25);
+      this.timer = inc;
       console.log(mediaRecorder.state);
     } else {
       mediaRecorder.pause();
+      clearInterval(this.timer);
       console.log(mediaRecorder.state);
       this.setState({ isRecording: false });
       this.haveRecord = true;
@@ -94,10 +94,25 @@ class Recorder extends Component {
 
   convertBlobToBase64ThenSave = () => {
     const { taskName } = this.state;
-    if (this.blob === null || taskName === '') {
-      alert('please enter a name and voice');
+    if (this.blob === null && taskName === '') {
+      this.inpref.current.placeholder = 'This area is required';
+      this.inpref.current.focus();
+      this.setState({ noTaskName: true });
+      alert('Please enter a name and voice');
       return;
     }
+    if (taskName === '') {
+      this.inpref.current.placeholder = 'This area is required';
+      this.inpref.current.focus();
+      this.setState({ noTaskName: true });
+      this.noTaskName = true;
+      return;
+    }
+    if (isEmpty(this.chunks)) {
+      alert('please record a voice for this task');
+      return;
+    }
+    this.everRecorded = false;
     const reader = new FileReader();
     reader.readAsDataURL(this.blob);
     reader.onloadend = () => {
@@ -129,62 +144,106 @@ class Recorder extends Component {
     window.streamReference.getAudioTracks().forEach((track) => {
       track.stop();
     });
-
+    this.setState({ duration: 0, isRecording: false });
     this.mediaRecorder.stop();
     this.haveRecord = true;
     this.started = false;
+    this.showAudio = true;
+    clearInterval(this.timer);
   }
 
   clearRecording = () => {
-    if (this.mediaRecorder && this.mediaRecorder.state === 'paused') {
+    if (this.mediaRecorder.state === 'paused') {
       this.mediaRecorder.stop();
     }
     this.chunks = [];
-    this.setState({ recordURL: '' });
+    this.setState({ recordURL: '', duration: 0 });
     this.blob = null;
     this.haveRecord = false;
     this.started = false;
+    this.everRecorded = false;
   }
 
-  async startRecording() {
-    const response = await navigator.mediaDevices.getUserMedia({ audio: true });
-    window.streamReference = response;
+  calculateDuration = () => {
+    const { duration } = this.state;
+    if (this.precisetime === 39) {
+      console.log('one sec');
+      this.precisetime = 0;
+      this.setState({ duration: duration + 1 });
+      return;
+    }
 
-    console.log(this.mediaRecorder);
+    this.precisetime++;
+  }
 
-    this.mediaRecorder = new MediaRecorder(response);
-    console.log('hey');
+  startRecording = async () => {
+    let isMicEnabled = true;
+    navigator.permissions.query({ name: 'microphone' }).then((permstatus) => {
+      if (permstatus.state === 'denied') {
+        alert('Please enable microphone permission');
+        isMicEnabled = false;
+      }
+    });
+    if (!isMicEnabled) {
+      return;
+    }
+    let response = null;
+    if (!this.preventer) {
+      this.preventer = true;
+      response = await navigator.mediaDevices.getUserMedia({ audio: true });
+      window.streamReference = response;
+      this.mediaRecorder = new MediaRecorder(response);
+      this.fillSaveFile();
+      this.clearRecording();
+      const { mediaRecorder } = this;
+      this.started = true;
+      this.showAudio = false;
+      this.haveRecord = false;
+      this.setState({ isRecording: true });
+      mediaRecorder.start();
+      this.everRecorded = true;
+      const inc = setInterval(this.calculateDuration, 25);
+      this.timer = inc;
+    }
 
-    this.fillSaveFile();
-    this.clearRecording();
-    const { mediaRecorder } = this;
-    this.started = true;
-
-    this.haveRecord = false;
-    this.setState({ isRecording: true });
-    console.log('yey');
-    mediaRecorder.start();
   }
 
   render() {
     const { taskName } = this.state;
+    const { duration } = this.state;
     const { isRecording } = this.state;
+    const { noTaskName } = this.state;
     const { recordURL } = this.state;
     return (
       <>
-
+        <br />
         <h2>Please Enter a Brief Task Name For Voice Record</h2>
-        <input onChange={this.updateTaskName} value={taskName} />
-        <audio controls src={recordURL} />
-        {!this.started && (<button type="button" onClick={this.startRecording}> Start Recording </button>)}
+        <div>
+          <input minLength="3" ref={this.inpref} onChange={this.updateTaskName} className="inp" value={taskName} />
+          {noTaskName && <p className="warner">*Please provide a name above for the task</p>}
+        </div>
+        {this.showAudio && (<audio controls className="recordAudio" src={recordURL} />)}
         {this.started && (
-          <button type="button" onClick={this.toggleRecord}>
-            {!isRecording ? 'Continue Recording' : 'Stop Recording'}
+          <h1 className="indicator">
+            {duration}
+            &nbsp;
+            Seconds
+          </h1>
+        )}
+        {!this.started && (
+          <button type="button" className="recordButtons" onClick={this.startRecording}>
+            {this.everRecorded ? 'Restart Recording' : 'Start Recording'}
           </button>
         )}
-        {this.haveRecord && this.started && (<button type="button" onClick={this.endRecording}> End Recording </button>)}
-        {this.haveRecord && this.started && (<button type="button" onClick={this.clearRecording}> Clear Recording </button>)}
-        <button type="button" onClick={this.convertBlobToBase64ThenSave}> Add Task </button>
+        {this.started && (
+          <button type="button" className="recordButtons" onClick={this.toggleRecord}>
+            {!isRecording ? 'Continue Recording' : 'Pause Recording'}
+          </button>
+        )}
+        {(isRecording || (this.haveRecord && this.started)) && (<button type="button" className="recordButtons" onClick={this.endRecording}> End Recording </button>)}
+        {this.haveRecord && this.started && (<button type="button" className="recordButtons" onClick={this.clearRecording}> Clear Recording </button>)}
+        <button type="button" className="recordButtons" onClick={this.convertBlobToBase64ThenSave}> Add Task </button>
+        <br />
       </>
     );
   }

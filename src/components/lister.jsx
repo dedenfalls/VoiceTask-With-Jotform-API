@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 /* eslint-disable no-plusplus */
 import React, { Component } from 'react';
+import { isEqual } from 'underscore';
 import Task from './task';
 import './task.css';
+
 
 const axios = require('axios');
 const credentials = require('../credentials');
@@ -14,11 +16,17 @@ class Lister extends Component {
       taskArray: [],
       // isRetrieveRequested: false,
     };
+    this.refresher = null;
   }
 
   componentDidMount() {
-    const counter = setInterval(this.retrieveVoiceTasks, 3000);
+    const periodicCaller = setInterval(this.retrieveVoiceTasks, 3000);
+    this.refresher = periodicCaller;
     this.retrieveVoiceTasks();
+  }
+
+  componentWillUnmount = () => {
+    clearInterval(this.refresher);
   }
 
   retrieveVoiceTasks = () => {
@@ -46,16 +54,19 @@ class Lister extends Component {
 
       helper.push({ id: task.id, name, voice });
     });
-    console.log(taskArray);
-    console.log((new Date()).toString());
-    if (JSON.stringify(helper) !== JSON.stringify(taskArray)) {
-      console.log('girdi');
-
+    console.log(helper);
+    if (taskArray.length === 0) {
+      this.setState({ taskArray: helper });
+      return;
+    }
+    let val = 0;
+    if (isEqual(helper, taskArray)) {
+      val = 1;
+    }
+    if (!val) {
       this.setState({ taskArray: helper });
     }
   }
-
-  // console.log(window.URL.createObjectURL(mp3));
 
   render() {
     // const { isRetrieveRequested } = this.state;
@@ -65,7 +76,7 @@ class Lister extends Component {
         <ul className="nobull">
           {taskArray.map((task) => (
             <li key={task.id}>
-              <Task id={task.id} value={task.name} voice={task.voice} />
+              <Task value={task.name} voice={task.voice} />
             </li>
           ))}
         </ul>

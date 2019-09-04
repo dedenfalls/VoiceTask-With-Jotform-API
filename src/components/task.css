@@ -1,15 +1,68 @@
 .button {
     background-color: white;
-    margin-bottom: 20px;
-    margin-left: 20px;
+    margin-bottom: 30px;
     border-color: lightgray;
 }
 .audio {
     margin-top: 20px;
-    margin-bottom: -20px;
+    margin-bottom: -22px;
     border-color: transparent;
     
 }
 .nobull {
     list-style-type: none;
+}
+.merge, .recordAudio{
+    border-radius: 15px;
+    margin: 0 auto;
+    border-color: black;
+    background-color: rgb(63, 184, 224);
+    width: 325px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 5px;
+    padding-bottom: 5px;
+    
+}
+.recordAudio {
+    background-color: transparent;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+.recordButtons {
+    width: 135px;
+    margin: auto;
+    margin-top: 5px;
+    background-color: orange;
+    border-radius: 19%;
+    height: 33px;
+    font-weight: boldest;
+    color: brown;
+}
+.inp {
+    width: 50%;
+    margin: auto;
+    margin-bottom: 10px;
+}
+.hr{
+    margin-right: 30px;
+    color: purple;
+    height: 4px;
+    background-color: purple;
+}
+.indicator {
+    color: green
+}
+::placeholder {
+    color: red;
+    font-weight: bold;
+    margin: auto;
+}
+.warner {
+    font-weight: bold;
+    margin: initial;
+    text-align: left;
+    margin-left: 25%;
+    margin-bottom: 20px;
+    color: rgb(196, 4, 4);
 }

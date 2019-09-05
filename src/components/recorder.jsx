@@ -1,12 +1,11 @@
-/* eslint-disable jsx-a11y/media-has-caption */
+/* eslint-disable no-alert */
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable no-console */
 /* eslint-disable no-plusplus */
 import React, { Component } from 'react';
-import { isEmpty } from 'underscore';
+import PropTypes from 'prop-types';
 
 const axios = require('axios');
-const credentials = require('../credentials');
 
 class Recorder extends Component {
   constructor(props) {
@@ -25,23 +24,15 @@ class Recorder extends Component {
     this.haveRecord = false;
     this.started = false;
     this.timer = null;
-    this.precisetime = 0;
+    this.preciseTime = 0;
     this.everRecorded = false;
     this.inpref = React.createRef();
     this.showAudio = false;
     this.preventer = false;
+    this.fromStartRecording = false;
   }
 
   componentDidMount = () => {
-    global.JF.initialize({ apiKey: credentials.apiKey });
-    global.JF.login(
-      function success() {
-        console.log('welcome');
-      },
-      function error() {
-        console.log('hata');
-      },
-    );
     if (navigator.mediaDevices === undefined) {
       console.log('unable to connect to audio recording device');
     } else {
@@ -80,8 +71,7 @@ class Recorder extends Component {
       this.haveRecord = false;
       this.setState({ isRecording: true });
       mediaRecorder.resume();
-      const inc = setInterval(this.calculateDuration, 25);
-      this.timer = inc;
+      this.timer = setInterval(this.calculateDuration, 25);
       console.log(mediaRecorder.state);
     } else {
       mediaRecorder.pause();
@@ -108,7 +98,7 @@ class Recorder extends Component {
       this.noTaskName = true;
       return;
     }
-    if (isEmpty(this.chunks)) {
+    if (this.chunks.length === 0) {
       alert('please record a voice for this task');
       return;
     }
@@ -122,6 +112,7 @@ class Recorder extends Component {
 
   addVoiceTask = (voice) => {
     let { taskName } = this.state;
+    const { apiKey } = this.props;
     axios({
       method: 'post',
       url: 'https://api.jotform.com/form/92323722053954/submissions',
@@ -131,7 +122,7 @@ class Recorder extends Component {
 
       },
       params: {
-        apiKey: credentials.apiKey,
+        apiKey,
       },
     }).then((response) => console.log(response));
     this.blob = null;
@@ -149,6 +140,7 @@ class Recorder extends Component {
     this.haveRecord = true;
     this.started = false;
     this.showAudio = true;
+    this.preventer = false;
     clearInterval(this.timer);
   }
 
@@ -156,24 +148,32 @@ class Recorder extends Component {
     if (this.mediaRecorder.state === 'paused') {
       this.mediaRecorder.stop();
     }
+    if (!this.fromStartRecording) {
+      window.streamReference.getAudioTracks().forEach((track) => {
+        track.stop();
+      });
+    } else {
+      this.fromStartRecording = false;
+    }
     this.chunks = [];
     this.setState({ recordURL: '', duration: 0 });
     this.blob = null;
     this.haveRecord = false;
     this.started = false;
     this.everRecorded = false;
+    this.preventer = false;
   }
 
   calculateDuration = () => {
     const { duration } = this.state;
-    if (this.precisetime === 39) {
+    if (this.preciseTime === 39) {
       console.log('one sec');
-      this.precisetime = 0;
+      this.preciseTime = 0;
       this.setState({ duration: duration + 1 });
       return;
     }
 
-    this.precisetime++;
+    this.preciseTime++;
   }
 
   startRecording = async () => {
@@ -194,6 +194,7 @@ class Recorder extends Component {
       window.streamReference = response;
       this.mediaRecorder = new MediaRecorder(response);
       this.fillSaveFile();
+      this.fromStartRecording = true;
       this.clearRecording();
       const { mediaRecorder } = this;
       this.started = true;
@@ -205,21 +206,18 @@ class Recorder extends Component {
       const inc = setInterval(this.calculateDuration, 25);
       this.timer = inc;
     }
-
   }
 
   render() {
-    const { taskName } = this.state;
-    const { duration } = this.state;
-    const { isRecording } = this.state;
-    const { noTaskName } = this.state;
-    const { recordURL } = this.state;
+    const {
+      taskName, duration, isRecording, noTaskName, recordURL,
+    } = this.state;
     return (
       <>
         <br />
-        <h2>Please Enter a Brief Task Name For Voice Record</h2>
+        <h2 className="header">Please Enter a Brief Task Name For Voice Record</h2>
         <div>
-          <input minLength="3" ref={this.inpref} onChange={this.updateTaskName} className="inp" value={taskName} />
+          <input ref={this.inpref} onChange={this.updateTaskName} className="inp" value={taskName} />
           {noTaskName && <p className="warner">*Please provide a name above for the task</p>}
         </div>
         {this.showAudio && (<audio controls className="recordAudio" src={recordURL} />)}
@@ -249,3 +247,7 @@ class Recorder extends Component {
   }
 }
 export default Recorder;
+
+Recorder.propTypes = {
+  apiKey: PropTypes.string.isRequired,
+};

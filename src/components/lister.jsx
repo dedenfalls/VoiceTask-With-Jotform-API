@@ -1,13 +1,14 @@
+/* eslint-disable no-alert */
 /* eslint-disable no-console */
 /* eslint-disable no-plusplus */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { isEqual } from 'underscore';
 import Task from './task';
 import './task.css';
 
 
 const axios = require('axios');
-const credentials = require('../credentials');
 
 class Lister extends Component {
   constructor(props) {
@@ -20,21 +21,24 @@ class Lister extends Component {
   }
 
   componentDidMount() {
-    const periodicCaller = setInterval(this.retrieveVoiceTasks, 3000);
+    const periodicCaller = setInterval(this.retrieveVoiceTasks, 1500);
     this.refresher = periodicCaller;
     this.retrieveVoiceTasks();
   }
 
   componentWillUnmount = () => {
-    clearInterval(this.refresher);
+    if (this.refresher) {
+      clearInterval(this.refresher);
+    }
   }
 
   retrieveVoiceTasks = () => {
+    const { apiKey } = this.props;
     axios({
       method: 'get',
       url: 'https://api.jotform.com/form/92323722053954/submissions',
       params: {
-        apiKey: credentials.apiKey,
+        apiKey,
       },
     }).then((response) => this.setRetrievedTasks(response))
       .catch((err) => console.log(err));
@@ -54,16 +58,12 @@ class Lister extends Component {
 
       helper.push({ id: task.id, name, voice });
     });
-    console.log(helper);
+    // console.log(helper);
     if (taskArray.length === 0) {
       this.setState({ taskArray: helper });
       return;
     }
-    let val = 0;
-    if (isEqual(helper, taskArray)) {
-      val = 1;
-    }
-    if (!val) {
+    if (!isEqual(helper, taskArray)) {
       this.setState({ taskArray: helper });
     }
   }
@@ -71,12 +71,13 @@ class Lister extends Component {
   render() {
     // const { isRetrieveRequested } = this.state;
     const { taskArray } = this.state;
+    const { apiKey } = this.props;
     return (
       <>
         <ul className="nobull">
           {taskArray.map((task) => (
             <li key={task.id}>
-              <Task value={task.name} voice={task.voice} />
+              <Task id={task.id} value={task.name} voice={task.voice} apiKey={apiKey} />
             </li>
           ))}
         </ul>
@@ -86,3 +87,7 @@ class Lister extends Component {
 }
 
 export default Lister;
+
+Lister.propTypes = {
+  apiKey: PropTypes.string.isRequired,
+};

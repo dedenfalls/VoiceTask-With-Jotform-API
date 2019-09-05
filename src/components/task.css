@@ -29,29 +29,35 @@
     margin-bottom: 10px;
     margin-top: 10px;
 }
-.recordButtons {
-    width: 135px;
+.recordButtons, .deleteButton, .editButton, .loginButton {
+    width: 145px;
     margin: auto;
     margin-top: 5px;
     background-color: orange;
     border-radius: 19%;
     height: 33px;
-    font-weight: boldest;
-    color: brown;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 0;
 }
 .inp {
-    width: 50%;
+    width: 30%;
     margin: auto;
     margin-bottom: 10px;
+    height: 30px;
+    font-size: 18px;
+    border-radius: 10px;
+
 }
-.hr{
-    margin-right: 30px;
+hr{
     color: purple;
     height: 4px;
+    width: 60%;
+    margin: auto;
     background-color: purple;
 }
 .indicator {
-    color: green
+    color: rgb(216, 22, 206)
 }
 ::placeholder {
     color: red;
@@ -62,7 +68,30 @@
     font-weight: bold;
     margin: initial;
     text-align: left;
-    margin-left: 25%;
+    margin-left: 35%;
     margin-bottom: 20px;
-    color: rgb(196, 4, 4);
+    font-size: 13px;
+    color: rgb(96, 10, 161);
+}
+.deleteButton {
+    background-color: red;
+}
+.editButton {
+    background-color: green;
+}
+.inpLogin {
+    width: 300px;
+    height: 30px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+.header {
+    width: 400px;
+    margin: auto;
+    margin-bottom: 50px;
+    color:  lightseagreen;
+}
+.loginButton {
+    margin-bottom: 50px;
+    background-color: green;
 }

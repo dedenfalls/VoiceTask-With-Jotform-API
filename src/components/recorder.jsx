@@ -199,6 +199,7 @@ class Recorder extends Component {
     }
     let response = null;
     if (!this.preventer) {
+      this.flagAddTask = false;
       this.preventer = true;
       response = await navigator.mediaDevices.getUserMedia({ audio: true });
       window.streamReference = response;
@@ -218,16 +219,21 @@ class Recorder extends Component {
     }
   }
 
+  handleEnterKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      this.convertBlobToBase64ThenSave();
+    }
+  }
+
   render() {
     const {
       taskName, duration, isRecording, noTaskName, recordURL,
     } = this.state;
     return (
       <>
-        <br />
-        <h2 className="header">Please Enter a Brief Task Name For Voice Record</h2>
+        <h3 className="header">Please Enter a Brief Task Name For Voice Record</h3>
         <div>
-          <input ref={this.inpref} onChange={this.updateTaskName} className="inp" value={taskName} />
+          <input onKeyDown={this.handleEnterKeyDown} ref={this.inpref} onChange={this.updateTaskName} className="inp" value={taskName} />
           {noTaskName && <p className="warner">*Please provide a name above for the task</p>}
         </div>
         {this.showAudio && (
@@ -243,18 +249,18 @@ class Recorder extends Component {
           </h1>
         )}
         {!this.started && (
-          <button type="button" className="btn btn-warning padd" onClick={this.startRecording}>
+          <button type="button" className="btn btn-secondary padd" onClick={this.startRecording}>
             {this.everRecorded ? 'Restart Recording' : 'Start Recording'}
           </button>
         )}
         {this.started && (
-          <button type="button" className="btn btn-warning padd" onClick={this.toggleRecord}>
+          <button type="button" className="btn btn-secondary padd" onClick={this.toggleRecord}>
             {!isRecording ? 'Continue Recording' : 'Pause Recording'}
           </button>
         )}
-        {(isRecording || (this.haveRecord && this.started)) && (<button type="button" className="btn btn-warning padd" onClick={this.endRecording}> End Recording </button>)}
-        {this.haveRecord && this.started && (<button type="button" className="btn btn-warning padd" onClick={this.clearRecording}> Clear Recording </button>)}
-        {this.flagAddTask && (<button type="button" className="btn btn-warning padd" onClick={this.convertBlobToBase64ThenSave}> Add Task </button>)}
+        {(isRecording || (this.haveRecord && this.started)) && (<button type="button" className="btn btn-secondary padd" onClick={this.endRecording}> End Recording </button>)}
+        {this.haveRecord && this.started && (<button type="button" className="btn btn-secondary padd" onClick={this.clearRecording}> Clear Recording </button>)}
+        {this.flagAddTask && (<button type="button" className="btn btn-secondary padd" onClick={this.convertBlobToBase64ThenSave}> Add Task </button>)}
       </>
     );
   }

@@ -3,11 +3,16 @@
     border-color: lightgray;
     margin: auto;
     margin-bottom: 27px;
+    border-radius: 5px;
+    margin-right: 10px;
 }
 .audio {
     margin-bottom: -22px;
     border-color: transparent;
     
+}
+.addTaskButton {
+    margin-bottom: 35px;
 }
 .nobull {
     list-style-type: none;
@@ -16,11 +21,15 @@
     padding: 0;
     
 }
-
+.innerFormSelect .nobull li{
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
 .recordAudio{
     width: 325px;
     align-self: center;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     margin-top: 10px;
 }
 .padd {
@@ -29,9 +38,18 @@
     font-weight: 600;
     color: white;
 }
-.paddDelete {
+.paddDelete, .paddDeleteTask {
     margin: 8px;
     margin-bottom: 13px;
+    height: 49px;
+    border-radius: 10px;
+}
+.paddDeleteTask {
+    margin: 4px;
+    background-color: transparent;
+    border-style: solid;
+    border-color:  #947a97;
+    margin-left: 10px;
 }
 .merge {
     display:  flex;
@@ -39,12 +57,13 @@
     border-radius: 15px;
     margin: 0 auto;
     background-color: #ac8daf;
-    width: 325px;
+    width: 425px;
     height: 85px;
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 15px;
     margin-top: 5px;
+    margin-bottom: 15px;
 }
 .inp {
     width: 30%;
@@ -57,7 +76,7 @@
     padding: 8px;
 }
 .subtopicInp {
-    margin-top: 50px;
+    margin-top: 20px;
     width: 90%;
     padding: 8px;
     margin-bottom: 10px;
@@ -68,27 +87,28 @@
     outline: 0;
 }
 .forms {
-    width: 60%;
-    max-width: 165px;
+    width: 65%;
+    max-width: 190px;
     display: initial;
     border-radius: 15px;
     font-weight: bolder;
+    overflow-wrap: break-word;
 }
 .special.list-group-item:first-child {
     border-top-right-radius: 15px !important;
     border-top-left-radius: 15px !important;
     outline: 0;
+    margin-bottom: 13px;
  } 
 .deleteForms {
     width: 30%;
 }
 hr{
     color: #b6ffea;
-    height: 6px;
-    width: 60%;
+    height: 2px;
     margin: auto;
     margin-top: 10px;
-    background-color: #484c7f;
+    background-color: #ddb6c6;
 }
 .indicator {
     color: rgb(216, 22, 206)
@@ -113,22 +133,26 @@ hr{
 }
 .login {
     width: 12%;
+    margin-top: 25px;
 }
 .inpLogin {
     width: 300px;
     height: 30px;
     border-radius: 10px;
+    display: block;
+    margin: auto;
     margin-bottom: 8px;
     outline: 0;
     padding: 8px;
     font-weight: 500;
 }
 .header {
-    width: 400px;
+    width: 350px;
     margin: auto;
     padding-top: 50px;
+    font-weight: 700;
     margin-bottom: 50px;
-    color:  lightseagreen;
+    color:  #484c7f;
 }
 
 .confirm_area {
@@ -167,7 +191,7 @@ hr{
 .formSelect {
     display: flex;
     align-items: stretch;
-    flex-basis: 410px;
+    flex-basis: 460px;
     background-color: #ddb6c6;
 }
 .tasks {

@@ -24,12 +24,13 @@ class Form extends Component {
     this.setState({ confirm: false });
   }
 
-  delete = () => {
+  delete = async () => {
     const { id, refresh, setSelectedForm } = this.props;
-    axios({
+    const resp = await axios({
       method: 'delete',
       url: `https://api.jotform.com/form/${id}?apikey=${global.JF.getAPIKey()}`,
-    }).then((resp) => console.log(resp));
+    });
+    console.log(resp);
     setSelectedForm(null);
     refresh();
   }
@@ -82,7 +83,7 @@ class Form extends Component {
                   </button>
                   <button
                     type="button"
-                    onClick={() => this.delete()}
+                    onClick={this.delete}
                     className="btn btn-danger paddDelete"
                   >
                     Confirm

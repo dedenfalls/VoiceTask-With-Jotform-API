@@ -63,11 +63,8 @@ class Login extends Component {
         <div>
           <h1 className="header">Please Login to Your Jotform Account</h1>
           <input type="text" onKeyDown={this.handleEnterKeyDown} className="inpLogin" value={user} onChange={this.saveUser} placeholder=" Username" />
-          <br />
           <input type="password" onKeyDown={this.handleEnterKeyDown} className="inpLogin" value={pass} onChange={this.savePass} placeholder=" Password" />
-          <br />
-          <br />
-          <button type="submit" className="btn btn-success login" onClick={this.submit}>Login</button>
+          <button type="submit" className="btn btn-secondary login" onClick={this.submit}>Login</button>
         </div>
       </>
     );

@@ -21,9 +21,16 @@ class Lister extends Component {
   }
 
   componentDidMount() {
-    const periodicCaller = setInterval(this.retrieveVoiceTasks, 1500);
+    const periodicCaller = setInterval(this.retrieveVoiceTasks, 1500000);
     this.refresher = periodicCaller;
     this.retrieveVoiceTasks();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { selectedForm } = this.props;
+    if (prevProps.selectedForm !== selectedForm) {
+      this.retrieveVoiceTasks();
+    }
   }
 
   componentWillUnmount = () => {

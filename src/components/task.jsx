@@ -44,17 +44,16 @@ class Task extends Component {
     this.myRef.current.pause();
   }
 
-  delete = () => {
+  delete = async () => {
     const { id, refresh } = this.props;
-    axios({
-
+    const response = await axios({
       method: 'delete',
       url: `https://api.jotform.com/submission/${id}`,
       params: {
         apiKey: global.JF.getAPIKey(),
       },
-    }).then((response) => this.setRetrievedTasks(response))
-      .catch((err) => console.log(err));
+    });
+    console.log(response);
     refresh();
   }
 
@@ -68,9 +67,8 @@ class Task extends Component {
         <div className="merge">
           <button type="button" className="button" onClick={this.stop}>■</button>
           <audio controls ref={this.myRef} className="audio" src={this.blobify()} />
+          <button type="button" className="btn btn-danger paddDeleteTask" onClick={this.setConfirm}>Delete</button>
         </div>
-
-        <button type="button" className="btn btn-danger paddDelete" onClick={this.setConfirm}>Delete</button>
         {confirm === true && (
           <div
             className="popup"
@@ -110,7 +108,7 @@ class Task extends Component {
                   <button
                     type="button"
                     onClick={() => this.delete()}
-                    className="btn btn-danger paddDelete"
+                    className="btn btn-danger"
                   >
                     Confirm
                   </button>

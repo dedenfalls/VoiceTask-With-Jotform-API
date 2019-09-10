@@ -20,7 +20,7 @@ class Forms extends Component {
   }
 
   componentDidMount() {
-    const periodicCaller = setInterval(this.retrieveForms, 1500);
+    const periodicCaller = setInterval(this.retrieveForms, 1500000);
     this.refresher = periodicCaller;
     this.retrieveForms();
   }
@@ -109,16 +109,20 @@ class Forms extends Component {
     this.setState({ formName: event.target.value });
   }
 
+  handleEnterKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      this.addForm();
+    }
+  }
+
   render() {
     const { forms, formName } = this.state;
     const { setSelectedForm, selected } = this.props;
     return (
       <>
-        <input className="subtopicInp" value={formName} type="text" onChange={this.setName} />
+        <h3 className="header">Voice Task Tracker</h3>
+        <input onKeyDown={this.handleEnterKeyDown} className="subtopicInp" value={formName} type="text" onChange={this.setName} maxLength="29" />
         <button type="button" className="btn btn-secondary addTaskButton" onClick={this.addForm}>Add New Subtopic</button>
-        <br />
-        <br />
-        <br />
         {!forms.length && (<h4>You have no subtopics yet. Please add one</h4>)}
         <ul className="nobull">
           {forms.map((form) => (

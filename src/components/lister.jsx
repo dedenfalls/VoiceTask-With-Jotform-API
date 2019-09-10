@@ -33,12 +33,13 @@ class Lister extends Component {
   }
 
   retrieveVoiceTasks = () => {
-    const { apiKey } = this.props;
+    const { selectedForm } = this.props;
+
     axios({
       method: 'get',
-      url: 'https://api.jotform.com/form/92323722053954/submissions',
+      url: `https://api.jotform.com/form/${selectedForm}/submissions`,
       params: {
-        apiKey,
+        apiKey: global.JF.getAPIKey(),
       },
     }).then((response) => this.setRetrievedTasks(response))
       .catch((err) => console.log(err));
@@ -71,13 +72,18 @@ class Lister extends Component {
   render() {
     // const { isRetrieveRequested } = this.state;
     const { taskArray } = this.state;
-    const { apiKey } = this.props;
     return (
       <>
+        {!taskArray.length && (<h5>You have no tasks please add one</h5>)}
         <ul className="nobull">
           {taskArray.map((task) => (
             <li key={task.id}>
-              <Task id={task.id} value={task.name} voice={task.voice} apiKey={apiKey} />
+              <Task
+                id={task.id}
+                value={task.name}
+                voice={task.voice}
+                refresh={this.retrieveVoiceTasks}
+              />
             </li>
           ))}
         </ul>
@@ -89,5 +95,5 @@ class Lister extends Component {
 export default Lister;
 
 Lister.propTypes = {
-  apiKey: PropTypes.string.isRequired,
+  selectedForm: PropTypes.string.isRequired,
 };

@@ -1,63 +1,101 @@
 .button {
     background-color: white;
-    margin-bottom: 30px;
     border-color: lightgray;
+    margin: auto;
+    margin-bottom: 27px;
 }
 .audio {
-    margin-top: 20px;
     margin-bottom: -22px;
     border-color: transparent;
     
 }
 .nobull {
     list-style-type: none;
-}
-.merge, .recordAudio{
-    border-radius: 15px;
-    margin: 0 auto;
-    border-color: black;
-    background-color: rgb(63, 184, 224);
-    width: 325px;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-top: 5px;
-    padding-bottom: 5px;
+    margin: 14px;
+    margin-top: 0;
+    padding: 0;
     
 }
-.recordAudio {
-    background-color: transparent;
-    margin-bottom: 10px;
+
+.recordAudio{
+    width: 325px;
+    align-self: center;
+    margin-bottom: 30px;
     margin-top: 10px;
 }
-.recordButtons, .deleteButton, .editButton, .loginButton {
-    width: 145px;
-    margin: auto;
-    margin-top: 5px;
-    background-color: orange;
-    border-radius: 19%;
-    height: 33px;
-    font-weight: bold;
+.padd {
+    margin: 5px;
+    margin-bottom: 12px;
+    font-weight: 600;
     color: white;
-    margin-bottom: 0;
+}
+.paddDelete {
+    margin: 8px;
+    margin-bottom: 13px;
+}
+.merge {
+    display:  flex;
+    justify-content: center; 
+    border-radius: 15px;
+    margin: 0 auto;
+    background-color: #ac8daf;
+    width: 325px;
+    height: 85px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 15px;
+    margin-top: 5px;
 }
 .inp {
     width: 30%;
     margin: auto;
     margin-bottom: 10px;
-    height: 30px;
+    height: 40px;
+    font-size: 18px;
+    outline: 0;
+    border-radius: 10px;
+    padding: 8px;
+}
+.subtopicInp {
+    margin-top: 50px;
+    width: 90%;
+    padding: 8px;
+    margin-bottom: 10px;
+    height: 40px;
+    max-width: 280px;
     font-size: 18px;
     border-radius: 10px;
-
+    outline: 0;
+}
+.forms {
+    width: 60%;
+    max-width: 165px;
+    display: initial;
+    border-radius: 15px;
+    font-weight: bolder;
+}
+.special.list-group-item:first-child {
+    border-top-right-radius: 15px !important;
+    border-top-left-radius: 15px !important;
+    outline: 0;
+ } 
+.deleteForms {
+    width: 30%;
 }
 hr{
-    color: purple;
-    height: 4px;
+    color: #b6ffea;
+    height: 6px;
     width: 60%;
     margin: auto;
-    background-color: purple;
+    margin-top: 10px;
+    background-color: #484c7f;
 }
 .indicator {
     color: rgb(216, 22, 206)
+}
+.selectSubtopic {
+    max-width: 500px;
+    margin: auto;
 }
 ::placeholder {
     color: red;
@@ -73,25 +111,66 @@ hr{
     font-size: 13px;
     color: rgb(96, 10, 161);
 }
-.deleteButton {
-    background-color: red;
-}
-.editButton {
-    background-color: green;
+.login {
+    width: 12%;
 }
 .inpLogin {
     width: 300px;
     height: 30px;
     border-radius: 10px;
     margin-bottom: 8px;
+    outline: 0;
+    padding: 8px;
+    font-weight: 500;
 }
 .header {
     width: 400px;
     margin: auto;
+    padding-top: 50px;
     margin-bottom: 50px;
     color:  lightseagreen;
 }
-.loginButton {
-    margin-bottom: 50px;
-    background-color: green;
+
+.confirm_area {
+    overflow-wrap: break-word;
+    color: darkred;
+    font-weight: bolder;
+    font-size: 22px;
+  }
+  .popup {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .popup_inner {
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    top: 25%;
+    bottom: 25%;
+    margin: auto;
+    background: white;
+  }
+.flex-container {
+    display: flex;
+    align-content: stretch;
+    height: 100%;
+    min-height: 100vh;
+}  
+.formSelect {
+    display: flex;
+    align-items: stretch;
+    flex-basis: 410px;
+    background-color: #ddb6c6;
+}
+.tasks {
+    justify-content: center;
+    flex-basis: 1300px;
 }

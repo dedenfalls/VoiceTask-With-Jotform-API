@@ -2,33 +2,51 @@ import React, { Component } from 'react';
 import Recorder from './recorder';
 import Lister from './lister';
 import Login from './login';
+import Forms from './forms';
 import './task.css';
 
 class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      toBeEdited: null,
-      apiKey: null,
+      isLoggedIn: false,
+      selectedForm: null,
     };
   }
 
-  setApiKey = (key) => {
-    this.setState({ apiKey: key });
+  setSelectedForm = (formID) => {
+    this.setState({ selectedForm: formID });
+    console.log(formID);
   }
 
-  setToBeEdited = (submissionId) => {
-    this.setState({ toBeEdited: submissionId });
+  setIsLoggedIn = () => {
+    this.setState({ isLoggedIn: true });
   }
 
   render() {
-    const { toBeEdited } = this.state;
-    const { apiKey } = this.state;
+    const { selectedForm } = this.state;
+    const { isLoggedIn } = this.state;
     return (
       <>
-        {!apiKey && (<Login setApi={this.setApiKey} />)}
-        {apiKey && (<Recorder toBeEdited={toBeEdited} apiKey={apiKey} />)}
-        {apiKey && (<Lister apiKey={apiKey} />)}
+        {!isLoggedIn && (<Login setIsLoggedIn={this.setIsLoggedIn} />)}
+        {isLoggedIn && (
+          <div className="flex-container">
+            <div className="formSelect">
+              <div className="innerFormSelect">
+                <Forms setSelectedForm={this.setSelectedForm} selected={selectedForm} />
+              </div>
+            </div>
+            <div className="tasks">
+              <Recorder selectedForm={selectedForm} />
+              {!selectedForm && (
+                <h5 className="selectSubtopic">
+                  You have not selected a subtopic yet. Please select or create one from left
+                </h5>
+              )}
+              {selectedForm && (<Lister selectedForm={selectedForm} />)}
+            </div>
+          </div>
+        )}
       </>
     );
   }

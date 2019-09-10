@@ -25,7 +25,7 @@ class Login extends Component {
   submit = () => {
     const { pass } = this.state;
     const { user } = this.state;
-    const { setApi } = this.props;
+    const { setIsLoggedIn } = this.props;
     if (pass === '' || user === '') {
       alert('Please Provide Your Credentials');
       return;
@@ -40,8 +40,9 @@ class Login extends Component {
     };
     global.JF.userLogin(login, (res) => {
       console.log(res);
-      setApi(res.appKey);
+      global.JF.initialize({ apiKey: res.appKey });
       console.log(res.appKey);
+      setIsLoggedIn();
     }, (e) => {
       alert('your credentials are wrong. Please correct them');
       console.log(e);
@@ -61,12 +62,12 @@ class Login extends Component {
       <>
         <div>
           <h1 className="header">Please Login to Your Jotform Account</h1>
-          <input type="text" className="inpLogin" value={user} onChange={this.saveUser} placeholder=" Username" />
+          <input type="text" onKeyDown={this.handleEnterKeyDown} className="inpLogin" value={user} onChange={this.saveUser} placeholder=" Username" />
           <br />
           <input type="password" onKeyDown={this.handleEnterKeyDown} className="inpLogin" value={pass} onChange={this.savePass} placeholder=" Password" />
           <br />
           <br />
-          <button type="submit" className="loginButton" onClick={this.submit}>Login</button>
+          <button type="submit" className="btn btn-success login" onClick={this.submit}>Login</button>
         </div>
       </>
     );
@@ -76,5 +77,5 @@ class Login extends Component {
 export default Login;
 
 Login.propTypes = {
-  setApi: PropTypes.func.isRequired,
+  setIsLoggedIn: PropTypes.func.isRequired,
 };

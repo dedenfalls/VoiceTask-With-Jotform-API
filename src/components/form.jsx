@@ -1,34 +1,19 @@
-/* eslint-disable no-console */
-/* eslint-disable no-plusplus */
+/* eslint-disable linebreak-style */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import './task.css';
+import axios from 'axios';
 
-const axios = require('axios');
-
-class Task extends Component {
+class Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
       confirm: false,
     };
-    this.myRef = React.createRef();
   }
 
-  blobify = () => {
-    const { voice } = this.props;
-
-    const byteString = atob(voice.split(',')[1]);
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    const blob = new Blob([ab], { type: 'audio/mp3' });
-    const soundURL = window.URL.createObjectURL(blob);
-    return soundURL;
-    // this.setState({ data: voice, URL: soundURL });
+  setSelected = () => {
+    const { setSelectedForm, id } = this.props;
+    setSelectedForm(id);
   }
 
   setConfirm = () => {
@@ -39,38 +24,26 @@ class Task extends Component {
     this.setState({ confirm: false });
   }
 
-  stop = () => {
-    this.myRef.current.currentTime = 0;
-    this.myRef.current.pause();
-  }
-
   delete = () => {
-    const { id, refresh } = this.props;
+    const { id, refresh, setSelectedForm } = this.props;
     axios({
-
       method: 'delete',
-      url: `https://api.jotform.com/submission/${id}`,
-      params: {
-        apiKey: global.JF.getAPIKey(),
-      },
-    }).then((response) => this.setRetrievedTasks(response))
-      .catch((err) => console.log(err));
+      url: `https://api.jotform.com/form/${id}?apikey=${global.JF.getAPIKey()}`,
+    }).then((resp) => console.log(resp));
+    setSelectedForm(null);
     refresh();
   }
 
   render() {
-    const { props } = this;
+    const { title, selected, id } = this.props;
     const { confirm } = this.state;
+
     return (
       <>
-        <hr className="hr" />
-        <h3 style={{ fontWeight: '400' }}>{props.value}</h3>
-        <div className="merge">
-          <button type="button" className="button" onClick={this.stop}>■</button>
-          <audio controls ref={this.myRef} className="audio" src={this.blobify()} />
-        </div>
-
-        <button type="button" className="btn btn-danger paddDelete" onClick={this.setConfirm}>Delete</button>
+        <button className={`list-group-item list-group-item-info forms special list-group-item-action ${selected === id ? 'active' : ''}`} onClick={this.setSelected} type="button">
+          {title}
+        </button>
+        <button type="button" className="btn btn-danger paddDelete deleteForms" onClick={this.setConfirm}>Delete</button>
         {confirm === true && (
           <div
             className="popup"
@@ -82,7 +55,7 @@ class Task extends Component {
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title" id="exampleModalLabel">
-                    Warning! You are about to delete a task
+                    Warning! You are about to delete a subtopic
                   </h5>
                   <button
                     type="button"
@@ -95,13 +68,13 @@ class Task extends Component {
                   </button>
                 </div>
                 <div className="modal-body">
-                  <h4>Do you really want to delete this task?</h4>
-                  {<p className="confirm_area">{props.value}</p>}
+                  <h4>Do you really want to delete this subtopic?</h4>
+                  {<p className="confirm_area">{title}</p>}
                 </div>
                 <div className="modal-footer">
                   <button
                     type="button"
-                    className="btn btn-secondary"
+                    className="btn btn-secondary paddDelete"
                     data-dismiss="modal"
                     onClick={this.resetConfirm}
                   >
@@ -124,16 +97,15 @@ class Task extends Component {
   }
 }
 
-Task.propTypes = {
+Form.propTypes = {
   id: PropTypes.string.isRequired,
-  value: PropTypes.string,
-  voice: PropTypes.string,
+  title: PropTypes.string,
+  setSelectedForm: PropTypes.func.isRequired,
   refresh: PropTypes.func.isRequired,
+  selected: PropTypes.string.isRequired,
+};
+Form.defaultProps = {
+  title: '',
 };
 
-Task.defaultProps = {
-  value: '',
-  voice: '',
-};
-
-export default Task;
+export default Form;

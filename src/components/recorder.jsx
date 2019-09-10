@@ -30,6 +30,7 @@ class Recorder extends Component {
     this.showAudio = false;
     this.preventer = false;
     this.fromStartRecording = false;
+    this.flagAddTask = false;
   }
 
   componentDidMount = () => {
@@ -83,6 +84,11 @@ class Recorder extends Component {
   }
 
   convertBlobToBase64ThenSave = () => {
+    const { selectedForm } = this.props;
+    if (!selectedForm) {
+      alert('You have not selected a subtopic to add task. Please select or create one');
+      return;
+    }
     const { taskName } = this.state;
     if (this.blob === null && taskName === '') {
       this.inpref.current.placeholder = 'This area is required';
@@ -103,6 +109,7 @@ class Recorder extends Component {
       return;
     }
     this.everRecorded = false;
+    this.flagAddTask = false;
     const reader = new FileReader();
     reader.readAsDataURL(this.blob);
     reader.onloadend = () => {
@@ -112,22 +119,23 @@ class Recorder extends Component {
 
   addVoiceTask = (voice) => {
     let { taskName } = this.state;
-    const { apiKey } = this.props;
+    const { selectedForm } = this.props;
     axios({
       method: 'post',
-      url: 'https://api.jotform.com/form/92323722053954/submissions',
+      url: `https://api.jotform.com/form/${selectedForm}/submissions`,
       data: {
         7: taskName,
         8: voice,
 
       },
       params: {
-        apiKey,
+        apiKey: global.JF.getAPIKey(),
       },
     }).then((response) => console.log(response));
     this.blob = null;
     this.chunks = [];
     taskName = '';
+    this.showAudio = false;
     this.setState({ taskName });
   }
 
@@ -141,6 +149,7 @@ class Recorder extends Component {
     this.started = false;
     this.showAudio = true;
     this.preventer = false;
+    this.flagAddTask = true;
     clearInterval(this.timer);
   }
 
@@ -160,6 +169,7 @@ class Recorder extends Component {
     this.blob = null;
     this.haveRecord = false;
     this.started = false;
+    this.showAudio = false;
     this.everRecorded = false;
     this.preventer = false;
   }
@@ -220,7 +230,11 @@ class Recorder extends Component {
           <input ref={this.inpref} onChange={this.updateTaskName} className="inp" value={taskName} />
           {noTaskName && <p className="warner">*Please provide a name above for the task</p>}
         </div>
-        {this.showAudio && (<audio controls className="recordAudio" src={recordURL} />)}
+        {this.showAudio && (
+          <div>
+            <audio controls className="recordAudio" src={recordURL} />
+          </div>
+        )}
         {this.started && (
           <h1 className="indicator">
             {duration}
@@ -229,19 +243,18 @@ class Recorder extends Component {
           </h1>
         )}
         {!this.started && (
-          <button type="button" className="recordButtons" onClick={this.startRecording}>
+          <button type="button" className="btn btn-warning padd" onClick={this.startRecording}>
             {this.everRecorded ? 'Restart Recording' : 'Start Recording'}
           </button>
         )}
         {this.started && (
-          <button type="button" className="recordButtons" onClick={this.toggleRecord}>
+          <button type="button" className="btn btn-warning padd" onClick={this.toggleRecord}>
             {!isRecording ? 'Continue Recording' : 'Pause Recording'}
           </button>
         )}
-        {(isRecording || (this.haveRecord && this.started)) && (<button type="button" className="recordButtons" onClick={this.endRecording}> End Recording </button>)}
-        {this.haveRecord && this.started && (<button type="button" className="recordButtons" onClick={this.clearRecording}> Clear Recording </button>)}
-        <button type="button" className="recordButtons" onClick={this.convertBlobToBase64ThenSave}> Add Task </button>
-        <br />
+        {(isRecording || (this.haveRecord && this.started)) && (<button type="button" className="btn btn-warning padd" onClick={this.endRecording}> End Recording </button>)}
+        {this.haveRecord && this.started && (<button type="button" className="btn btn-warning padd" onClick={this.clearRecording}> Clear Recording </button>)}
+        {this.flagAddTask && (<button type="button" className="btn btn-warning padd" onClick={this.convertBlobToBase64ThenSave}> Add Task </button>)}
       </>
     );
   }
@@ -249,5 +262,5 @@ class Recorder extends Component {
 export default Recorder;
 
 Recorder.propTypes = {
-  apiKey: PropTypes.string.isRequired,
+  selectedForm: PropTypes.string.isRequired,
 };

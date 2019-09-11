@@ -17,7 +17,6 @@ class Main extends Component {
 
   setSelectedForm = (formID) => {
     this.setState({ selectedForm: formID });
-    console.log(formID);
   }
 
   setIsLoggedIn = () => {
@@ -26,12 +25,10 @@ class Main extends Component {
 
   setTaskAdded = () => {
     this.setState({ taskAdded: true });
-    console.log('setted');
   }
 
   unsetTaskAdded = () => {
     this.setState({ taskAdded: false });
-    console.log('unsetted');
   }
 
   render() {

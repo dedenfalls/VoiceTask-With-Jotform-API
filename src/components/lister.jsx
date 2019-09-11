@@ -27,9 +27,7 @@ class Lister extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    console.log(prevProps.isNeeded);
     const { selectedForm, isNeeded, unset } = this.props;
-    console.log(isNeeded);
     if ((prevProps.selectedForm !== selectedForm) || (!prevProps.isNeeded && isNeeded)) {
       this.retrieveVoiceTasks();
       if (!prevProps.isNeeded && isNeeded) {

@@ -37,22 +37,19 @@ class Forms extends Component {
     const { forms } = this.state;
     axios({
       method: 'get',
-      url: `https://api.jotform.com/user/forms?apikey=${global.JF.getAPIKey()}`,
+      url: `https://api.jotform.com/user/forms?limit=500&apikey=${global.JF.getAPIKey()}`,
     }).then((res) => {
       const response = res.data.content;
-
       for (let i = 0; i < response.length; i++) {
         const { title } = response[i];
         const { length } = title;
 
         if (title.includes('_voiceTask', (length - 10)) && response[i].status !== 'DELETED') {
           helper.push({ title: title.substring(0, length - 10), id: response[i].id });
-          console.log(response[i].title);
         }
       }
 
       if (!isEqual(helper, forms)) {
-        console.log('different');
         this.setState({ forms: helper });
       }
     });

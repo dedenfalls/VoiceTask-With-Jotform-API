@@ -39,9 +39,7 @@ class Login extends Component {
       expandLimit: 'yes',
     };
     global.JF.userLogin(login, (res) => {
-      console.log(res);
       global.JF.initialize({ apiKey: res.appKey });
-      console.log(res.appKey);
       setIsLoggedIn();
     }, (e) => {
       alert('your credentials are wrong. Please correct them');

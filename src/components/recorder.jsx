@@ -39,7 +39,7 @@ class Recorder extends Component {
     } else {
       navigator.mediaDevices.enumerateDevices()
         .then(() => {
-          console.log('Got some devices huh?');
+          console.log('Devices found');
         })
         .catch((err) => {
           console.log(err.name, err.message);
@@ -173,7 +173,6 @@ class Recorder extends Component {
   calculateDuration = () => {
     const { duration } = this.state;
     if (this.preciseTime === 39) {
-      console.log('one sec');
       this.preciseTime = 0;
       this.setState({ duration: duration + 1 });
       return;

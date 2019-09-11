@@ -64,8 +64,10 @@ class Forms extends Component {
       alert('Please enter a name for subtopic');
       return;
     }
+    const copy = (` ${formName}`).slice(1);
+    this.setState({ formName: '' });
     const formData = new FormData();
-    formData.append('properties[title]', `${formName}_voiceTask`);
+    formData.append('properties[title]', `${copy}_voiceTask`);
     formData.append('questions[7][inputTextMask]', '');
     formData.append('questions[7][maxSize]', '');
     formData.append('questions[7][name]', 'typeA7');
@@ -102,7 +104,6 @@ class Forms extends Component {
     if (response) {
       this.retrieveForms();
     }
-    this.setState({ formName: '' });
   }
 
   setName = (event) => {

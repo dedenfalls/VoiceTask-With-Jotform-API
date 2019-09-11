@@ -117,26 +117,28 @@ class Recorder extends Component {
     };
   }
 
-  addVoiceTask = (voice) => {
-    let { taskName } = this.state;
-    const { selectedForm } = this.props;
-    axios({
+  addVoiceTask = async (voice) => {
+    const { taskName } = this.state;
+    const copy = (` ${taskName}`).slice(1);
+    this.setState({ taskName: '' });
+    const { selectedForm, needRefresh } = this.props;
+    const response = await axios({
       method: 'post',
       url: `https://api.jotform.com/form/${selectedForm}/submissions`,
       data: {
-        7: taskName,
+        7: copy,
         8: voice,
 
       },
       params: {
         apiKey: global.JF.getAPIKey(),
       },
-    }).then((response) => console.log(response));
+    });
+    console.log(response);
     this.blob = null;
     this.chunks = [];
-    taskName = '';
     this.showAudio = false;
-    this.setState({ taskName });
+    needRefresh();
   }
 
   endRecording = () => {
@@ -268,5 +270,6 @@ class Recorder extends Component {
 export default Recorder;
 
 Recorder.propTypes = {
+  needRefresh: PropTypes.func.isRequired,
   selectedForm: PropTypes.string.isRequired,
 };

@@ -11,6 +11,7 @@ class Main extends Component {
     this.state = {
       isLoggedIn: false,
       selectedForm: null,
+      taskAdded: false,
     };
   }
 
@@ -23,9 +24,18 @@ class Main extends Component {
     this.setState({ isLoggedIn: true });
   }
 
+  setTaskAdded = () => {
+    this.setState({ taskAdded: true });
+    console.log('setted');
+  }
+
+  unsetTaskAdded = () => {
+    this.setState({ taskAdded: false });
+    console.log('unsetted');
+  }
+
   render() {
-    const { selectedForm } = this.state;
-    const { isLoggedIn } = this.state;
+    const { selectedForm, taskAdded, isLoggedIn } = this.state;
     return (
       <>
         {!isLoggedIn && (<Login setIsLoggedIn={this.setIsLoggedIn} />)}
@@ -37,13 +47,13 @@ class Main extends Component {
               </div>
             </div>
             <div className="tasks">
-              <Recorder selectedForm={selectedForm} />
+              <Recorder needRefresh={this.setTaskAdded} selectedForm={selectedForm} />
               {!selectedForm && (
                 <h5 className="selectSubtopic">
                   You have not selected a subtopic yet. Please select or create one from left
                 </h5>
               )}
-              {selectedForm && (<Lister selectedForm={selectedForm} />)}
+              {selectedForm && (<Lister unset={this.unsetTaskAdded} isNeeded={taskAdded} selectedForm={selectedForm} />)}
             </div>
           </div>
         )}

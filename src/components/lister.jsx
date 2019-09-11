@@ -27,9 +27,14 @@ class Lister extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { selectedForm } = this.props;
-    if (prevProps.selectedForm !== selectedForm) {
+    console.log(prevProps.isNeeded);
+    const { selectedForm, isNeeded, unset } = this.props;
+    console.log(isNeeded);
+    if ((prevProps.selectedForm !== selectedForm) || (!prevProps.isNeeded && isNeeded)) {
       this.retrieveVoiceTasks();
+      if (!prevProps.isNeeded && isNeeded) {
+        unset();
+      }
     }
   }
 
@@ -102,5 +107,10 @@ class Lister extends Component {
 export default Lister;
 
 Lister.propTypes = {
+  isNeeded: PropTypes.bool,
+  unset: PropTypes.func.isRequired,
   selectedForm: PropTypes.string.isRequired,
+};
+Lister.defaultProps = {
+  isNeeded: false,
 };

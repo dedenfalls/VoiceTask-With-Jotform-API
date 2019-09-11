@@ -21,7 +21,7 @@ class Lister extends Component {
   }
 
   componentDidMount() {
-    const periodicCaller = setInterval(this.retrieveVoiceTasks, 1500000);
+    const periodicCaller = setInterval(this.retrieveVoiceTasks, 1500);
     this.refresher = periodicCaller;
     this.retrieveVoiceTasks();
   }

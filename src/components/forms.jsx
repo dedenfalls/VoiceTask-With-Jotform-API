@@ -20,7 +20,7 @@ class Forms extends Component {
   }
 
   componentDidMount() {
-    const periodicCaller = setInterval(this.retrieveForms, 1500000);
+    const periodicCaller = setInterval(this.retrieveForms, 1500);
     this.refresher = periodicCaller;
     this.retrieveForms();
   }

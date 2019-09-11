@@ -154,7 +154,14 @@ hr{
     margin-bottom: 50px;
     color:  #484c7f;
 }
-
+.noSound {
+    display: flex;
+    align-self: center;
+    font-weight: 400;
+    margin-bottom: 17px;
+    margin-right: 4px;
+    font-size: 20px;
+}
 .confirm_area {
     overflow-wrap: break-word;
     color: darkred;

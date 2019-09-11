@@ -90,31 +90,25 @@ class Recorder extends Component {
       return;
     }
     const { taskName } = this.state;
-    if (this.blob === null && taskName === '') {
+    if (taskName === '') {
       this.inpref.current.placeholder = 'This area is required';
       this.inpref.current.focus();
       this.setState({ noTaskName: true });
       alert('Please enter a name and voice');
       return;
     }
-    if (taskName === '') {
-      this.inpref.current.placeholder = 'This area is required';
-      this.inpref.current.focus();
-      this.setState({ noTaskName: true });
-      this.noTaskName = true;
-      return;
-    }
-    if (this.chunks.length === 0) {
-      alert('please record a voice for this task');
-      return;
-    }
+
     this.everRecorded = false;
     this.flagAddTask = false;
-    const reader = new FileReader();
-    reader.readAsDataURL(this.blob);
-    reader.onloadend = () => {
-      this.addVoiceTask(reader.result);
-    };
+    if (this.blob) {
+      const reader = new FileReader();
+      reader.readAsDataURL(this.blob);
+      reader.onloadend = () => {
+        this.addVoiceTask(reader.result);
+      };
+      return;
+    }
+    this.addVoiceTask('');
   }
 
   addVoiceTask = async (voice) => {
@@ -235,7 +229,7 @@ class Recorder extends Component {
       <>
         <h3 className="header">Please Enter a Brief Task Name For Voice Record</h3>
         <div>
-          <input onKeyDown={this.handleEnterKeyDown} ref={this.inpref} onChange={this.updateTaskName} className="inp" value={taskName} />
+          <input maxLength="28" onKeyDown={this.handleEnterKeyDown} ref={this.inpref} onChange={this.updateTaskName} className="inp" value={taskName} />
           {noTaskName && <p className="warner">*Please provide a name above for the task</p>}
         </div>
         {this.showAudio && (

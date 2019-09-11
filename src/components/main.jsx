@@ -53,7 +53,13 @@ class Main extends Component {
                   You have not selected a subtopic yet. Please select or create one from left
                 </h5>
               )}
-              {selectedForm && (<Lister unset={this.unsetTaskAdded} isNeeded={taskAdded} selectedForm={selectedForm} />)}
+              {selectedForm && (
+                <Lister
+                  unset={this.unsetTaskAdded}
+                  isNeeded={taskAdded}
+                  selectedForm={selectedForm}
+                />
+              )}
             </div>
           </div>
         )}

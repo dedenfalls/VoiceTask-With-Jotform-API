@@ -58,15 +58,16 @@ class Task extends Component {
   }
 
   render() {
-    const { props } = this;
+    const { value, voice } = this.props;
     const { confirm } = this.state;
     return (
       <>
         <hr className="hr" />
-        <h3 style={{ fontWeight: '400' }}>{props.value}</h3>
+        {voice.length !== 0 && (<h3 style={{ fontWeight: '400' }}>{value}</h3>)}
         <div className="merge">
-          <button type="button" className="button" onClick={this.stop}>■</button>
-          <audio controls ref={this.myRef} className="audio" src={this.blobify()} />
+          {voice.length === 0 && (<h3 className="noSound">{value}</h3>)}
+          {voice.length !== 0 && (<button type="button" className="button" onClick={this.stop}>■</button>)}
+          {voice.length !== 0 && (<audio controls ref={this.myRef} className="audio" src={this.blobify()} />)}
           <button type="button" className="btn btn-danger paddDeleteTask" onClick={this.setConfirm}>Delete</button>
         </div>
         {confirm === true && (
@@ -94,7 +95,7 @@ class Task extends Component {
                 </div>
                 <div className="modal-body">
                   <h4>Do you really want to delete this task?</h4>
-                  {<p className="confirm_area">{props.value}</p>}
+                  {<p className="confirm_area">{value}</p>}
                 </div>
                 <div className="modal-footer">
                   <button

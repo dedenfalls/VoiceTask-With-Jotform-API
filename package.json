@@ -11,7 +11,7 @@
     "react-audio-recorder": "^2.2.0",
     "react-dom": "^16.9.0",
     "react-scripts": "3.1.1",
-    "underscore": "^1.9.1"
+    "underscore": "^1.12.1"
   },
   "scripts": {
     "start": "react-scripts start",
